@@ -15,12 +15,13 @@ typedef struct Bullet {
 
 typedef struct Gun {
 	Vector2 pos;
-	Vector2 hitbox;
+	f32 radius;
 	Vector2 dir;
-	Rectangle rec;
 	Vector2 hit_point;
 	Bullet** bullets;
 	u16 bullet_count;
+	f32 shot_break;
+	f32 shot_break_elapsed;
 } Gun;
 
 Bullet* init_bullet(f32 radius, f32 speed);
@@ -29,9 +30,11 @@ void update_bullet(Bullet* bullet);
 void update_bullets(Bullet** bullets, u16 bullet_count);
 void draw_bullet(Bullet* bullet, Texture_Manager* tex_manager);
 void draw_bullets(Bullet** bullets, u16 bullet_count, Texture_Manager* tex_manager);
+void deactivate_bullet(Bullet* bullet);
 
-Gun* init_gun(f32 x, f32 y, f32 width, f32 height, u16 bullet_count, f32 bullet_radius, f32 bullet_speed);
+Gun* init_gun(f32 x, f32 y, f32 radius, u16 bullet_count, f32 bullet_radius, f32 bullet_speed);
 void update_gun(Gun* gun);
 void draw_gun(Gun* gun, Texture_Manager* tex_manager);
+void shoot_gun(Gun* gun);
 
 #endif

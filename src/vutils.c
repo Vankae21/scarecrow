@@ -56,8 +56,9 @@ Vector2 vec2_lerp(Vector2 start_vec, Vector2 end_vec, float t)
 Vector2 vec2_translate(Vector2 start_vec, Vector2 end_vec, float t)
 {
 	Vector2 dir = vec2_normalize((Vector2){ .x = end_vec.x - start_vec.x, .y = end_vec.y - start_vec.y });
-	return vec2_distance(start_vec, end_vec) > t * GetFrameTime() ?
-			(Vector2){ .x = start_vec.x + dir.x * t * GetFrameTime(), .y = start_vec.y + dir.y * t * GetFrameTime() } : end_vec;
+	return vec2_distance(start_vec, end_vec) > t * GetFrameTime() // condition
+			? (Vector2){ .x = start_vec.x + dir.x * t * GetFrameTime(), .y = start_vec.y + dir.y * t * GetFrameTime() }
+			: end_vec;
 }
 
 bool vec2_cmp(Vector2 a, Vector2 b)
@@ -83,4 +84,9 @@ float random_val(float min, float max)
     // Scale and shift the range to [min, max)
     float range = max - min;
     return min + random_0_1 * range;
+}
+
+bool are_circles_colliding(Circle cir0, Circle cir1)
+{
+	return vec2_distance(cir0.center, cir1.center) <= cir0.radius + cir1.radius;
 }

@@ -23,5 +23,6 @@ bool vec2_cmp(Vector2 a, Vector2 b);
 Vector2 vec2_sum(Vector2 a, Vector2 b);
 Vector2 vec2_div(Vector2 a, float divisor);
 float random_val(float min, float max);
+bool are_circles_colliding(Circle cir0, Circle cir1);
 
 #endif
