@@ -18,6 +18,19 @@ extern Font font;
 
 extern u16 COUNT_CROW;
 
+typedef enum {
+	MENU,
+	INGAME,
+	LOSE,
+} Game_State;
+
+typedef enum {
+	LINUX,
+	WINDOWS,
+	MACOS,
+	UNKNOWN,
+} Platform;
+
 void init();
 void update();
 void late_update();
@@ -27,4 +40,8 @@ void finish();
 void draw_crop_health_bar(f32 crop_health, f32 max_crop_health, Texture_Manager* tex_manager);
 void draw_timer(f32 timer);
 
-#endif
+// GAMEPLAY FUNCTIONS
+void restart_game();
+void main_menu();
+
+#endif 
