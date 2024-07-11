@@ -12,6 +12,8 @@ Texture_Manager* init_texture_manager()
 	texture_manager->tex_crow = LoadTexture("assets/crow.png");
 	texture_manager->tex_background0 = LoadTexture("assets/background0.png");
 	texture_manager->tex_background1 = LoadTexture("assets/background1.png");
+	texture_manager->tex_hp0 = LoadTexture("assets/hp0.png");
+	texture_manager->tex_hp1 = LoadTexture("assets/hp1.png");
 
 	return texture_manager;
 }

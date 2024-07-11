@@ -56,7 +56,8 @@ void draw_bullet(Bullet* bullet, Texture_Manager* tex_manager)
 	DrawTexturePro(tex, (Rectangle){ 0, 0, tex.width, tex.height },
 				    (Rectangle){ bullet->pos.x, bullet->pos.y, bullet->radius * 2, bullet->radius * 2 },
 				    (Vector2){ bullet->radius, bullet->radius }, degree, WHITE);
-	DrawCircleLinesV(bullet->pos, bullet->radius, RED);
+	if (DEBUG)
+		DrawCircleLinesV(bullet->pos, bullet->radius, RED);
 }
 
 void draw_bullets(Bullet** bullets, u16 bullet_count, Texture_Manager* tex_manager)
@@ -118,8 +119,11 @@ void draw_gun(Gun* gun, Texture_Manager* tex_manager)
 	DrawTexturePro(tex, (Rectangle){ 0, 0, tex.width, tex.height },
 				   (Rectangle){ gun->pos.x, gun->pos.y, gun->radius * 2, gun->radius * 2 },
 				   (Vector2){ gun->radius, gun->radius }, degree, WHITE);
-	DrawCircleLinesV(gun->pos, gun->radius, ORANGE);
-	DrawCircleV(gun->hit_point, 4, WHITE);
+
+	if (DEBUG) {
+		DrawCircleV(gun->hit_point, 4, WHITE);
+		DrawCircleLinesV(gun->pos, gun->radius, ORANGE);
+	}
 
 	draw_bullets(gun->bullets, gun->bullet_count, tex_manager);
 }

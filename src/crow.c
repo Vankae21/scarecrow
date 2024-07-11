@@ -1,6 +1,7 @@
 #include "include/crow.h"
 #include "include/game.h"
 #include "include/vutils.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 Crow* init_crow(Vector2 pos, f32 radius, f32 speed)
@@ -17,28 +18,41 @@ Crow* init_crow(Vector2 pos, f32 radius, f32 speed)
 	return crow;
 }
 
-void update_crow(Crow* crow)
+void update_crow(Crow* crow, f32* crop_health)
 {
 	if (crow->pos.y != CROW_MAX_HEIGHT) {
 		crow->pos = vec2_translate(crow->pos, (Vector2){ crow->pos.x, CROW_MAX_HEIGHT }, crow->speed);
-	} else {
+	} else if (crow->state != EATING) {
 		crow->state = EATING;
+		crow->frame = CROW_MIN_EATING_FRAME;
+		crow->frame_timer = 0;
 	}
 
-	if (crow->frame_timer < CROW_FRAME_TIME) {
-		crow->frame_timer += GetFrameTime();
-	} else {
-		crow->frame_timer = 0;
-		switch(crow->state) {
-			case FLYING:
+	switch(crow->state) {
+		case FLYING:
+			if (crow->frame_timer >= CROW_FLYING_FRAME_TIME) {
 				crow->frame = crow->frame == CROW_MAX_FLYING_FRAME ? CROW_MIN_FLYING_FRAME : crow->frame + 1;
-				break;
-			case EATING:
+				crow->frame_timer = 0;
+			} else {
+				crow->frame_timer += GetFrameTime();
+			}
+			break;
+		case EATING:
+			if (crow->frame_timer >= CROW_EATING_FRAME_TIME) {
+				if (crow->frame == CROW_DAMAGING_FRAME) {
+					*crop_health -= CROW_DAMAGE;
+					if (*crop_health < 0) {
+						*crop_health = 0;
+					}
+				}
 				crow->frame = crow->frame == CROW_MAX_EATING_FRAME ? CROW_MIN_EATING_FRAME : crow->frame + 1;
-				break;
-			default:
-				break;
-		}
+				crow->frame_timer = 0;
+			} else {
+				crow->frame_timer += GetFrameTime();
+			}
+			break;
+		default:
+			break;
 	}
 }
 
@@ -48,7 +62,14 @@ void draw_crow(Crow* crow, Texture_Manager* tex_manager)
 
 	DrawTexturePro(tex, (Rectangle){ tex.height * crow->frame, 0, tex.height, tex.height },
 				   (Rectangle){ crow->pos.x, crow->pos.y, crow->radius * 2, crow->radius * 2 }, (Vector2){crow->radius, crow->radius}, 0, WHITE);
-	DrawCircleLinesV(crow->pos, crow->radius, RED);
+	if (DEBUG) {
+		DrawCircleLinesV(crow->pos, crow->radius, RED);
+		char buffer[48];
+		sprintf(buffer, "x: %0.3f, y: %0.3f\nspeed: %0.3f, state: %s", crow->pos.x, crow->pos.y, crow->speed, crow->state == FLYING ? "FLYING" : "EATING");
+		f32 font_size = 12, spacing = 0;
+		Vector2 text_measurement = MeasureTextEx(font, buffer, font_size, spacing);
+		DrawTextEx(font, buffer, (Vector2){ crow->pos.x - text_measurement.x/2, crow->pos.y - text_measurement.y * 4 }, font_size, spacing, BLACK);
+	}
 }
 
 Crow** init_crows(f32 radius, u16 crow_count)
@@ -64,10 +85,10 @@ Crow** init_crows(f32 radius, u16 crow_count)
 	return crows;
 }
 
-void update_crows(Crow** crows, u16 crow_count)
+void update_crows(Crow** crows, u16 crow_count, f32* crop_health)
 {
 	for (int i = 0; i < crow_count; i++) {
-		update_crow(crows[i]);
+		update_crow(crows[i], crop_health);
 	}
 }
 
