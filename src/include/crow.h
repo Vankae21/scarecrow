@@ -7,10 +7,10 @@
 #include "types.h"
 
 #define RADIUS_CROW 32.0f
-#define HIT_RADIUS_CROW 16.0f
+#define HIT_RADIUS_CROW 24.0f
 #define CROW_MAX_HEIGHT (138 * SIZE_MULTIPLIER - RADIUS_CROW)
 #define CROW_MIN_SPEED 200
-#define CROW_MAX_SPEED 400
+#define CROW_MAX_SPEED 240
 
 #define CROW_MIN_FLYING_FRAME 0
 #define CROW_MAX_FLYING_FRAME 3
@@ -38,7 +38,7 @@ typedef struct Crow {
 Crow* init_crow(Vector2 pos, f32 radius, f32 hit_radius, f32 speed);
 void update_crow(Crow* crow, f32* crop_health);
 void draw_crow(Crow* crow, Texture_Manager* tex_manager);
-Crow** init_crows(f32 radius, f32 hit_radius, u16 crow_count);
+Crow** init_crows(f32 y, f32 radius, f32 hit_radius, u16 crow_count);
 void update_crows(Crow** crows, u16 crow_count, f32* crop_health);
 void draw_crows(Crow** crows, u16 crow_count, Texture_Manager* tex_manager);
 void add_to_crows(Crow*** crows, u16* crow_count, Vector2 pos);

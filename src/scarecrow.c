@@ -10,7 +10,7 @@ Scarecrow* init_scarecrow(f32 x, f32 y, f32 width, f32 height, f32 gun_radius)
 	scarecrow->pos = (Vector2){ x, y };
 	scarecrow->hitbox = (Vector2){ width, height };
 	scarecrow->rec = (Rectangle){ x, y, width, height };
-	scarecrow->gun = init_gun(x + width * 0.9, y + height/2, gun_radius, 16, 12, 1000);
+	scarecrow->gun = init_gun(x + width * 0.9, y + height/2, gun_radius, 16, 12, 1500);
 
 	return scarecrow;
 }

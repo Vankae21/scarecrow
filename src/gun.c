@@ -145,3 +145,10 @@ void shoot_gun(Gun* gun)
 		}
 	}
 }
+
+void deactivate_gun_bullets(Gun* gun)
+{
+	for (int i = 0; i < gun->bullet_count; i++) {
+		gun->bullets[i]->is_active = false;
+	}
+}

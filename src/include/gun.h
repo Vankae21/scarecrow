@@ -36,5 +36,6 @@ Gun* init_gun(f32 x, f32 y, f32 radius, u16 bullet_count, f32 bullet_radius, f32
 void update_gun(Gun* gun);
 void draw_gun(Gun* gun, Texture_Manager* tex_manager);
 void shoot_gun(Gun* gun);
+void deactivate_gun_bullets(Gun* gun);
 
 #endif

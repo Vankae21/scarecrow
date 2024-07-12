@@ -28,7 +28,7 @@ Game_State game_state = MENU;
 
 f32 CROP_HEALTH = MAX_CROP_HEALTH;
 f32 timer = .0f;
-u16 COUNT_CROW = 6;
+u16 COUNT_CROW = 0, prev_crow_count = 0;
 
 Texture_Manager* tex_manager = (void*)0;
 Scarecrow* scarecrow = (void*)0;
@@ -46,12 +46,13 @@ void init()
 	tex_manager = init_texture_manager();
 	scarecrow = init_scarecrow(24, 300, tex_manager->tex_scarecrow.width * SIZE_MULTIPLIER, tex_manager->tex_scarecrow.height * SIZE_MULTIPLIER,
 								(f32)tex_manager->tex_gun.width * SIZE_MULTIPLIER / 2);
-	crows = init_crows(RADIUS_CROW, HIT_RADIUS_CROW, COUNT_CROW);
 
 	// BUTTONS
 	f32 button_width = 292, button_height = 64;
 	start_button = init_button((Vector2){ button_width, button_height }, (Vector2){ WIDTH/2 - 128, HEIGHT/2 - 32 - (button_height + 8) }, "start", 48);
+	restart_button = init_button((Vector2){ button_width, button_height }, (Vector2){ WIDTH/2 - 128, HEIGHT/2 - 32 - (button_height + 8) }, "restart", 48);
 	exit_button = init_button((Vector2){ button_width, button_height }, (Vector2){ WIDTH/2 - 128, HEIGHT/2 - 32 }, "exit", 48);
+	main_button = init_button((Vector2){ button_width, button_height }, (Vector2){ WIDTH/2 - 128, HEIGHT/2 - 32 }, "main menu", 40);
 	github_button = init_button((Vector2){ 64, 64 }, (Vector2){ 8, HEIGHT - 8 - 64 }, "github", 12);
 
 	// FONT
@@ -60,9 +61,12 @@ void init()
 
 void update()
 {
+	// ACTIVATE DEBUG MODE
+	if (IsKeyPressed(KEY_ENTER)) DEBUG = DEBUG ? false : true;
+
 	if (game_state == MENU) {
 		if (is_button_pressed(start_button)) {
-			game_state = INGAME;
+			restart_game(2);
 		} else if (is_button_pressed(exit_button)) {
 			// exit
 			exit(0);
@@ -80,15 +84,37 @@ void update()
 			}
 			system(command);
 		}
+	} else if (game_state == PAUSE) {
+		if (is_button_pressed(restart_button)) {
+			restart_game(2);
+		} else if (is_button_pressed(main_button)) {
+			main_menu();
+		}
+	} else if (game_state == LOSE) {
+		if (is_button_pressed(restart_button)) {
+			restart_game(2);
+		} else if (is_button_pressed(main_button)) {
+			main_menu();
+		}
 	}
-	if (game_state != INGAME) return;
 
-	// ACTIVATE DEBUG MODE
-	if (IsKeyPressed(KEY_ENTER)) DEBUG = DEBUG ? false : true;
+	if (IsKeyPressed(KEY_ESCAPE) && (game_state == PAUSE || game_state == INGAME)) {
+		game_state = game_state == PAUSE ? INGAME : PAUSE;
+		if (game_state == PAUSE) {
+			ShowCursor();
+		} else {
+			HideCursor();
+		}
+	}
+
+	if (game_state != INGAME) return;
 
 	update_scarecrow(scarecrow);
 
 	update_crows(crows, COUNT_CROW, &CROP_HEALTH);
+	if (CROP_HEALTH <= 0) {
+		lose();
+	}
 
 	for (int i = 0; i < scarecrow->gun->bullet_count; i++) {
 		if (!scarecrow->gun->bullets[i]->is_active) continue;
@@ -98,6 +124,9 @@ void update()
 			if (are_circles_colliding((Circle){ cur_bullet->pos, cur_bullet->radius }, (Circle){ cur_crow->pos, cur_crow->hit_radius })) {
 				deactivate_bullet(cur_bullet);
 				remove_from_crows(&crows, &COUNT_CROW, cur_crow);
+				if (COUNT_CROW <= 0) {
+					spawn_crows();
+				}
 				break;
 			}
 		}
@@ -113,14 +142,29 @@ void late_update()
 	draw_crows(crows, COUNT_CROW, tex_manager);
 	draw_background1(tex_manager);
 	
-	if (game_state == MENU) { 
-		draw_button(start_button, tex_manager);
-		draw_button(exit_button, tex_manager);
-		draw_button(github_button, tex_manager);
-	} else if (game_state == INGAME) {
-		draw_crop_health_bar(CROP_HEALTH, MAX_CROP_HEALTH, tex_manager);
-		draw_timer(timer);
+	switch (game_state) {
+		case MENU:
+			draw_button(start_button);
+			draw_button(exit_button);
+			draw_button(github_button);
+			break;
+		case PAUSE:
+			draw_button(main_button);
+			draw_button(restart_button);
+		case INGAME:
+			draw_crop_health_bar(CROP_HEALTH, MAX_CROP_HEALTH, tex_manager);
+			draw_timer(timer);
+			break;
+		case LOSE:
+			draw_button(main_button);
+			draw_button(restart_button);
+			draw_timer(timer);
+			break;
+		default:
+			break;
 	}
+
+	draw_cursor(tex_manager);
 }
 
 void finish()
@@ -160,4 +204,53 @@ void draw_timer(f32 timer)
 		sprintf(buffer, "Time passed:%0.3f", timer);
 	}
 	DrawTextEx(font, buffer, (Vector2){ 8, 80 }, 32, 0, BLACK);
+}
+
+void draw_cursor(Texture_Manager* tex_manager)
+{
+	if (game_state != INGAME) return;
+	Texture2D tex = tex_manager->tex_cursor;
+	DrawTexturePro(tex, (Rectangle){ 0, 0, tex.width, tex.height },
+				   (Rectangle){ GetMouseX(), GetMouseY(), tex.width * SIZE_MULTIPLIER, tex.height * SIZE_MULTIPLIER },
+				   (Vector2){tex.width * SIZE_MULTIPLIER / 2, tex.height * SIZE_MULTIPLIER / 2}, 0, WHITE);
+}
+
+// GAMEPLAY FUNCTIONS
+void restart_game(u16 crow_count)
+{
+	HideCursor();
+	game_state = INGAME;
+	COUNT_CROW = crow_count;
+	prev_crow_count = crow_count;
+	PAUSED = false;
+	CROP_HEALTH = MAX_CROP_HEALTH;
+	timer = .0f;
+	crows = init_crows(-220, RADIUS_CROW, HIT_RADIUS_CROW, crow_count);
+	deactivate_gun_bullets(scarecrow->gun);
+}
+
+void main_menu()
+{
+	ShowCursor();
+	game_state = MENU;
+	COUNT_CROW = 0;
+	PAUSED = false;
+	CROP_HEALTH = MAX_CROP_HEALTH;
+	timer = .0f;
+	scarecrow->gun->dir = (Vector2){0};
+	deactivate_gun_bullets(scarecrow->gun);
+}
+
+void lose()
+{
+	ShowCursor();
+	game_state = LOSE;
+}
+
+void spawn_crows()
+{
+	COUNT_CROW = prev_crow_count + rand() % 2 + 1;
+	printf("Previous: %d, Now: %d\n", prev_crow_count, COUNT_CROW);
+	prev_crow_count = COUNT_CROW;
+	crows = init_crows(-220 - sqrtf(COUNT_CROW) * 10, RADIUS_CROW, HIT_RADIUS_CROW, COUNT_CROW);
 }

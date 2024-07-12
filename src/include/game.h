@@ -21,6 +21,7 @@ extern u16 COUNT_CROW;
 typedef enum {
 	MENU,
 	INGAME,
+	PAUSE,
 	LOSE,
 } Game_State;
 
@@ -39,9 +40,12 @@ void finish();
 // NON-GAME FUNCTIONS
 void draw_crop_health_bar(f32 crop_health, f32 max_crop_health, Texture_Manager* tex_manager);
 void draw_timer(f32 timer);
+void draw_cursor(Texture_Manager* tex_manager);
 
 // GAMEPLAY FUNCTIONS
-void restart_game();
+void restart_game(u16 crow_count);
 void main_menu();
+void lose();
+void spawn_crows();
 
 #endif 

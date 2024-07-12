@@ -14,6 +14,7 @@ Texture_Manager* init_texture_manager()
 	texture_manager->tex_background1 = LoadTexture("assets/background1.png");
 	texture_manager->tex_hp0 = LoadTexture("assets/hp0.png");
 	texture_manager->tex_hp1 = LoadTexture("assets/hp1.png");
+	texture_manager->tex_cursor = LoadTexture("assets/cursor.png");
 
 	return texture_manager;
 }

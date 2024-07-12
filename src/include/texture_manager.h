@@ -10,6 +10,7 @@ typedef struct Texture_Manager {
 	Texture2D tex_bullet;
 	Texture2D tex_gun;
 	Texture2D tex_hp0, tex_hp1;
+	Texture2D tex_cursor;
 } Texture_Manager;
 
 Texture_Manager* init_texture_manager();

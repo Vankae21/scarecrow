@@ -36,7 +36,7 @@ bool is_button_pressed(Button* button)
     return false;
 }
 
-void draw_button(Button* button, Texture_Manager* tex_manager)
+void draw_button(Button* button)
 {
     Color button_color;
     switch (button->state) {

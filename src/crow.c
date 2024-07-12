@@ -73,13 +73,13 @@ void draw_crow(Crow* crow, Texture_Manager* tex_manager)
 	}
 }
 
-Crow** init_crows(f32 radius, f32 hit_radius, u16 crow_count)
+Crow** init_crows(f32 y, f32 radius, f32 hit_radius, u16 crow_count)
 {
 	Crow** crows = calloc(crow_count, sizeof(Crow*));
 
 	u16 spawn_offset_x = 250;
 	for (int i = 0; i < crow_count; i++) {
-		crows[i] = init_crow((Vector2){ spawn_offset_x - RADIUS_CROW + rand() % (WIDTH - spawn_offset_x), -radius },
+		crows[i] = init_crow((Vector2){ spawn_offset_x - RADIUS_CROW + rand() % (WIDTH - spawn_offset_x), y },
 							 radius, hit_radius, random_val(CROW_MIN_SPEED, CROW_MAX_SPEED));
 	}
 
