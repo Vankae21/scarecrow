@@ -9,7 +9,7 @@ extern Font font;
 
 #define WIDTH 1024
 #define HEIGHT 768
-#define TITLE "Game"
+#define TITLE "Scare the Crows"
 #define FPS 60
 
 #define SIZE_MULTIPLIER 4

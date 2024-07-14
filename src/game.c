@@ -118,7 +118,7 @@ void update()
 
 	if (game_state != INGAME) return;
 
-	update_scarecrow(scarecrow);
+	update_scarecrow(scarecrow, sound_manager);
 
 	update_crows(crows, COUNT_CROW, &CROP_HEALTH);
 	if (CROP_HEALTH <= 0) {

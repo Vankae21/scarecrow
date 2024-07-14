@@ -3,7 +3,6 @@
 #include "include/vutils.h"
 #include <math.h>
 #include <raylib.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 // BULLET
@@ -90,7 +89,7 @@ Gun* init_gun(f32 x, f32 y, f32 radius, u16 bullet_count, f32 bullet_radius, f32
 	return gun;
 }
 
-void update_gun(Gun* gun)
+void update_gun(Gun* gun, Sound_Manager* sound_manager)
 {
 	gun->dir = vec2_normalize((Vector2){ GetMouseX() - gun->pos.x, GetMouseY() - gun->pos.y });
 	if (gun->dir.x <= 0.4f) {
@@ -107,7 +106,7 @@ void update_gun(Gun* gun)
 
 	gun->shot_break_elapsed += GetFrameTime();
 	if (IsMouseButtonPressed(0) && gun->shot_break_elapsed >= gun->shot_break) {
-		shoot_gun(gun);
+		shoot_gun(gun, sound_manager);
 	}
 
 	update_bullets(gun->bullets, gun->bullet_count);
@@ -129,7 +128,7 @@ void draw_gun(Gun* gun, Texture_Manager* tex_manager)
 	draw_bullets(gun->bullets, gun->bullet_count, tex_manager);
 }
 
-void shoot_gun(Gun* gun)
+void shoot_gun(Gun* gun, Sound_Manager* sound_manager)
 {
 	if (gun->shot_break_elapsed < gun->shot_break) return;
 
@@ -142,6 +141,7 @@ void shoot_gun(Gun* gun)
 			bullet->pos = gun->hit_point;
 
 			gun->shot_break_elapsed = 0;
+			play_sound_gun(sound_manager);
 			return;
 		}
 	}

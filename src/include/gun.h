@@ -2,6 +2,7 @@
 #define GUN_H
 
 #include <raylib.h>
+#include "sound_manager.h"
 #include "texture_manager.h"
 #include "types.h"
 
@@ -33,9 +34,9 @@ void draw_bullets(Bullet** bullets, u16 bullet_count, Texture_Manager* tex_manag
 void deactivate_bullet(Bullet* bullet);
 
 Gun* init_gun(f32 x, f32 y, f32 radius, u16 bullet_count, f32 bullet_radius, f32 bullet_speed);
-void update_gun(Gun* gun);
+void update_gun(Gun* gun, Sound_Manager* sound_manager);
 void draw_gun(Gun* gun, Texture_Manager* tex_manager);
-void shoot_gun(Gun* gun);
+void shoot_gun(Gun* gun, Sound_Manager* sound_manager);
 void deactivate_gun_bullets(Gun* gun);
 
 #endif

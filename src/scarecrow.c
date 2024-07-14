@@ -15,9 +15,9 @@ Scarecrow* init_scarecrow(f32 x, f32 y, f32 width, f32 height, f32 gun_radius)
 	return scarecrow;
 }
 
-void update_scarecrow(Scarecrow* scarecrow)
+void update_scarecrow(Scarecrow* scarecrow, Sound_Manager* sound_manager)
 {
-	update_gun(scarecrow->gun);
+	update_gun(scarecrow->gun, sound_manager);
 }
 
 void draw_scarecrow(Scarecrow* scarecrow, Texture_Manager* tex_manager)
