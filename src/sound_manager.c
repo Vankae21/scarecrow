@@ -17,7 +17,7 @@ Sound_Manager* init_sound_manager()
 
 	s_manager->sound_click = LoadSound("assets/click.wav");
 	s_manager->sound_lose = LoadSound("assets/lose.ogg");
-	s_manager->music = LoadSound("assets/d_major.ogg"); SetSoundVolume(s_manager->music, 0.2f);
+	s_manager->music = LoadSound("assets/d_major.ogg"); SetSoundVolume(s_manager->music, 0.13f);
 
 	return s_manager;
 }
