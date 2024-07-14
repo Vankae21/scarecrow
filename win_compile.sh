@@ -3,7 +3,7 @@
 SRC_DIR="src"
 INCLUDE_DIR="$SRC_DIR/include"
 OBJ_DIR="objects"
-C_FLAGS=" -Lwin-raylib/lib -Iwin-raylib/include -lraylib -lopengl32 -lgdi32 -lwinmm"
+C_FLAGS=" -Lwin-raylib/lib -Iwin-raylib/include -lraylib -lopengl32 -lgdi32 -lwinmm -mwindows"
 CC=x86_64-w64-mingw32-gcc
 
 mkdir -p $OBJ_DIR

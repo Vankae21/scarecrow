@@ -101,7 +101,7 @@ void update_gun(Gun* gun)
 			gun->dir.y = -0.916f;
 		}
 	}
-	printf("x: %0.3f, y: %0.3f\n", gun->dir.x, gun->dir.y);
+//	printf("x: %0.3f, y: %0.3f\n", gun->dir.x, gun->dir.y);
 
 	gun->hit_point = (Vector2){ gun->pos.x + gun->radius * gun->dir.x, gun->pos.y + gun->radius * gun->dir.y };
 

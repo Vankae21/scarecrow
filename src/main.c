@@ -15,6 +15,9 @@ int main(int argc, char** argv)
 	SetTargetFPS(FPS);
 	SetExitKey(0);
 
+	Image icon = LoadImage("assets/icon_low.png");
+	SetWindowIcon(icon);
+
 	init();
 
 	Color bg_color = { 161, 187, 157, 255 };

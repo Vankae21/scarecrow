@@ -266,7 +266,6 @@ void spawn_crows()
 {
 	PlaySound(sound_manager->sound_crows[rand() % 3]);
 	COUNT_CROW = prev_crow_count + rand() % 2 + 1;
-	printf("Previous: %d, Now: %d\n", prev_crow_count, COUNT_CROW);
 	prev_crow_count = COUNT_CROW;
 	crows = init_crows(-220 - sqrtf(COUNT_CROW) * 10, RADIUS_CROW, HIT_RADIUS_CROW, COUNT_CROW);
 }
