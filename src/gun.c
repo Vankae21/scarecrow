@@ -3,6 +3,7 @@
 #include "include/vutils.h"
 #include <math.h>
 #include <raylib.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 // BULLET
@@ -92,15 +93,15 @@ Gun* init_gun(f32 x, f32 y, f32 radius, u16 bullet_count, f32 bullet_radius, f32
 void update_gun(Gun* gun)
 {
 	gun->dir = vec2_normalize((Vector2){ GetMouseX() - gun->pos.x, GetMouseY() - gun->pos.y });
-
-	if (gun->dir.x <= 0.6f) {
-		gun->dir.x = 0.6f;
+	if (gun->dir.x <= 0.4f) {
+		gun->dir.x = 0.4f;
 		if (gun->dir.y >= 0) {
-			gun->dir.y = 0.8f;
+			gun->dir.y = 0.916f;
 		} else {
-			gun->dir.y = -0.8f;
+			gun->dir.y = -0.916f;
 		}
 	}
+	printf("x: %0.3f, y: %0.3f\n", gun->dir.x, gun->dir.y);
 
 	gun->hit_point = (Vector2){ gun->pos.x + gun->radius * gun->dir.x, gun->pos.y + gun->radius * gun->dir.y };
 

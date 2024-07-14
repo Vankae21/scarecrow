@@ -11,6 +11,7 @@ int main(int argc, char** argv)
 	}
 
 	InitWindow(WIDTH, HEIGHT, TITLE);
+	InitAudioDevice();
 	SetTargetFPS(FPS);
 	SetExitKey(0);
 
@@ -26,6 +27,7 @@ int main(int argc, char** argv)
 		EndDrawing();
 	}
 
+	CloseAudioDevice();
 	CloseWindow();
 	finish();
 

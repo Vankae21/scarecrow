@@ -6,6 +6,7 @@
 #include "include/button.h"
 #include "include/crow.h"
 #include "include/gun.h"
+#include "include/sound_manager.h"
 #include "include/types.h"
 #include "include/scarecrow.h"
 #include "include/texture_manager.h"
@@ -31,6 +32,7 @@ f32 timer = .0f;
 u16 COUNT_CROW = 0, prev_crow_count = 0;
 
 Texture_Manager* tex_manager = (void*)0;
+Sound_Manager* sound_manager = (void*)0;
 Scarecrow* scarecrow = (void*)0;
 Crow** crows = (void*)0;
 
@@ -44,6 +46,7 @@ void init()
 {
 	srand(time(0));
 	tex_manager = init_texture_manager();
+	sound_manager = init_sound_manager();
 	scarecrow = init_scarecrow(24, 300, tex_manager->tex_scarecrow.width * SIZE_MULTIPLIER, tex_manager->tex_scarecrow.height * SIZE_MULTIPLIER,
 								(f32)tex_manager->tex_gun.width * SIZE_MULTIPLIER / 2);
 
@@ -62,15 +65,20 @@ void init()
 void update()
 {
 	// ACTIVATE DEBUG MODE
-	if (IsKeyPressed(KEY_ENTER)) DEBUG = DEBUG ? false : true;
+
+	if(game_state != LOSE && !IsSoundPlaying(sound_manager->music))
+		PlaySound(sound_manager->music);
+
+	if (IsKeyPressed(KEY_ENTER))
+		DEBUG = DEBUG ? false : true;
 
 	if (game_state == MENU) {
-		if (is_button_pressed(start_button)) {
+		if (is_button_pressed(start_button, sound_manager)) {
 			restart_game(2);
-		} else if (is_button_pressed(exit_button)) {
+		} else if (is_button_pressed(exit_button, sound_manager)) {
 			// exit
 			exit(0);
-		} else if (is_button_pressed(github_button)) {
+		} else if (is_button_pressed(github_button, sound_manager)) {
 			char command[64], *url = "https://github.com/Vankae21/scarecrow";
 			switch (PLATFORM) {
 				case LINUX:
@@ -85,17 +93,18 @@ void update()
 			system(command);
 		}
 	} else if (game_state == PAUSE) {
-		if (is_button_pressed(restart_button)) {
+		if (is_button_pressed(restart_button, sound_manager)) {
 			restart_game(2);
-		} else if (is_button_pressed(main_button)) {
+		} else if (is_button_pressed(main_button, sound_manager)) {
 			main_menu();
 		}
 	} else if (game_state == LOSE) {
-		if (is_button_pressed(restart_button)) {
+		if (is_button_pressed(restart_button, sound_manager)) {
 			restart_game(2);
-		} else if (is_button_pressed(main_button)) {
+		} else if (is_button_pressed(main_button, sound_manager)) {
 			main_menu();
 		}
+		StopSound(sound_manager->music);
 	}
 
 	if (IsKeyPressed(KEY_ESCAPE) && (game_state == PAUSE || game_state == INGAME)) {
@@ -123,6 +132,7 @@ void update()
 			Crow* cur_crow = crows[j];
 			if (are_circles_colliding((Circle){ cur_bullet->pos, cur_bullet->radius }, (Circle){ cur_crow->pos, cur_crow->hit_radius })) {
 				deactivate_bullet(cur_bullet);
+				play_sound_crow_die(sound_manager);
 				remove_from_crows(&crows, &COUNT_CROW, cur_crow);
 				if (COUNT_CROW <= 0) {
 					spawn_crows();
@@ -156,6 +166,9 @@ void late_update()
 			draw_timer(timer);
 			break;
 		case LOSE:
+			const char* lose_text = "game over"; f32 font_size = 64;
+			Vector2 lose_text_ms = MeasureTextEx(font, lose_text, font_size, 0);
+			DrawTextEx(font, lose_text, (Vector2){ (WIDTH - lose_text_ms.x)/2 + 16, 200 }, font_size, 0, BLACK);
 			draw_button(main_button);
 			draw_button(restart_button);
 			draw_timer(timer);
@@ -218,6 +231,7 @@ void draw_cursor(Texture_Manager* tex_manager)
 // GAMEPLAY FUNCTIONS
 void restart_game(u16 crow_count)
 {
+	PlaySound(sound_manager->sound_crows[rand() % 3]);
 	HideCursor();
 	game_state = INGAME;
 	COUNT_CROW = crow_count;
@@ -243,12 +257,14 @@ void main_menu()
 
 void lose()
 {
+	PlaySound(sound_manager->sound_lose);
 	ShowCursor();
 	game_state = LOSE;
 }
 
 void spawn_crows()
 {
+	PlaySound(sound_manager->sound_crows[rand() % 3]);
 	COUNT_CROW = prev_crow_count + rand() % 2 + 1;
 	printf("Previous: %d, Now: %d\n", prev_crow_count, COUNT_CROW);
 	prev_crow_count = COUNT_CROW;
